@@ -1,0 +1,88 @@
+{
+  "schema_version": 2,
+  "task_id": null,
+  "objective": null,
+  "state": "PREFLIGHT",
+  "routing": {
+    "decision": null,
+    "local_project": {
+      "name": null,
+      "kind": null,
+      "shareable_fingerprint": null,
+      "identity_basis": [],
+      "confidence": null,
+      "local_root": null,
+      "projectless_reason": null
+    },
+    "chatgpt_project": {
+      "name": null,
+      "url": null,
+      "id": null,
+      "account_or_workspace": null,
+      "memory_mode": null,
+      "shared_state": null,
+      "privacy_partition": "private",
+      "binding_state": "UNRESOLVED",
+      "created_by_skill": false,
+      "verified_at": null,
+      "verification_evidence": []
+    }
+  },
+  "chat": {
+    "url": null,
+    "title": null,
+    "surface": "Chat",
+    "account_or_workspace": null
+  },
+  "target": {
+    "model": "GPT-5.6 Sol",
+    "model_verified": false,
+    "mode": "Pro",
+    "mode_verified": false,
+    "verified_at": null
+  },
+  "prompt": {
+    "path": null,
+    "sha256": null,
+    "bytes": null,
+    "submitted_at": null
+  },
+  "context": {
+    "inventory_path": null,
+    "inventory_sha256": null,
+    "bundle_path": null,
+    "bundle_sha256": null,
+    "total_files": null,
+    "total_bytes": null,
+    "source_priority": [],
+    "redactions": [],
+    "sensitive_overrides": [],
+    "screens": [],
+    "transmission": {
+      "destination": "chatgpt.com",
+      "approved_at": null,
+      "approval_basis": null
+    }
+  },
+  "turns": {
+    "pre_submit_count": null,
+    "submitted_user_turn": null,
+    "assistant_turn": null,
+    "assistant_message_id": null
+  },
+  "response": {
+    "completed_at": null,
+    "sha256": null,
+    "bytes": null,
+    "completion_signals": []
+  },
+  "attachments": [],
+  "artifacts": [],
+  "validation": {
+    "status": "NOT_RUN",
+    "report_path": null,
+    "errors": []
+  },
+  "blocker": null,
+  "next_action": null
+}

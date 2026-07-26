@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "title": "Task context for ChatGPT Pro",
+  "objective": null,
+  "source_priority": [
+    "task-contract",
+    "current-source",
+    "current-diff",
+    "tests-and-logs",
+    "screens",
+    "historical-context"
+  ],
+  "limits": {
+    "max_files": 500,
+    "max_file_bytes": 26214400,
+    "max_total_bytes": 209715200,
+    "max_depth": 20,
+    "max_directories": 2000
+  },
+  "items": [
+    {
+      "id": "task-contract",
+      "path": "ABSOLUTE_OR_SPEC_RELATIVE_PATH",
+      "role": "plan",
+      "reviewed": false,
+      "visual_reviewed": false,
+      "notes": "User-visible task contract; no hidden reasoning.",
+      "exclude": []
+    }
+  ],
+  "redactions": [
+    {
+      "id": "email",
+      "regex": "(?i)[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}",
+      "replacement": "[REDACTED:email]",
+      "roles": [
+        "plan",
+        "log",
+        "context"
+      ]
+    }
+  ]
+}

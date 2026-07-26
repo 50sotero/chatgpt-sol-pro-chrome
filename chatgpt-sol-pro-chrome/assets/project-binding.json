@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "local_project": {
+    "name": null,
+    "kind": null,
+    "shareable_fingerprint": null,
+    "identity_basis": [],
+    "local_root": null
+  },
+  "chatgpt_project": {
+    "name": null,
+    "url": null,
+    "id": null,
+    "account_or_workspace": null,
+    "memory_mode": null,
+    "shared_state": null,
+    "privacy_partition": "private",
+    "created_by_skill": false,
+    "created_at": null,
+    "last_verified_at": null,
+    "verification_evidence": []
+  },
+  "last_conversation_url": null,
+  "state": "UNBOUND",
+  "stale_reason": null
+}
