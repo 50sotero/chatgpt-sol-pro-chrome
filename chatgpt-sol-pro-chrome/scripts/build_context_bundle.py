@@ -27,12 +27,13 @@ import sys
 import tempfile
 import unicodedata
 import zipfile
+from functools import lru_cache
 from pathlib import Path, PurePosixPath
 from typing import Any, Iterable, Optional
 
 
 GENERATOR = "build_context_bundle.py"
-VERSION = "1.0.0"
+VERSION = "1.0.1"
 SCHEMA = "openai.chatgpt-context-bundle/v1"
 INVENTORY_SCHEMA = "openai.chatgpt-context-inventory/v1"
 FIXED_ZIP_TIME = (1980, 1, 1, 0, 0, 0)
@@ -238,6 +239,51 @@ PATH_DIR_NAMES = {
     "medical",
     "tax",
 }
+PERSONAL_ROOT_NAMES = {
+    "desktop",
+    "documents",
+    "downloads",
+    "music",
+    "pictures",
+    "videos",
+    "public",
+    "favorites",
+    "contacts",
+    "saved games",
+    "searches",
+}
+CLOUD_ROOT_NAMES = {
+    "box",
+    "box drive",
+    "dropbox",
+    "google drive",
+    "icloud drive",
+    "iclouddrive",
+    "mega",
+    "mega sync",
+    "megasync",
+    "my drive",
+    "nextcloud",
+    "onedrive",
+    "pcloud",
+    "pcloud drive",
+    "proton drive",
+    "seafile",
+    "shared drives",
+}
+CONFIGURED_CLOUD_ROOT_ENV_VARS = (
+    "OneDrive",
+    "OneDriveConsumer",
+    "OneDriveCommercial",
+    "DROPBOX_HOME",
+    "BOX_HOME",
+    "GOOGLE_DRIVE",
+    "ICLOUD_DRIVE",
+    "NEXTCLOUD_HOME",
+    "PCLOUD_HOME",
+    "MEGA_HOME",
+    "PROTON_DRIVE_HOME",
+)
 
 
 class BundleError(RuntimeError):
@@ -347,6 +393,256 @@ def path_within(candidate: Path, parent: Path) -> bool:
         return False
 
 
+@lru_cache(maxsize=8)
+def configured_profile_containers(home: Path) -> frozenset[Path]:
+    containers: set[Path] = set()
+    parent_name = home.parent.name.casefold()
+    if os.name == "nt" or parent_name in {"home", "users"}:
+        containers.add(home.parent)
+
+    if os.name == "nt":
+        try:
+            import winreg
+
+            with winreg.OpenKey(
+                winreg.HKEY_LOCAL_MACHINE,
+                r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList",
+            ) as key:
+                value, _ = winreg.QueryValueEx(key, "ProfilesDirectory")
+                if isinstance(value, str) and value.strip():
+                    candidate = Path(os.path.expandvars(value)).expanduser()
+                    if candidate.is_absolute():
+                        containers.add(candidate)
+        except (ImportError, OSError):
+            pass
+    else:
+        filesystem_root = Path(home.anchor)
+        for name in ("home", "Users"):
+            candidate = filesystem_root / name
+            if candidate.exists():
+                containers.add(candidate)
+
+    return frozenset(path.resolve() for path in containers)
+
+
+def profile_relative_parts(path: Path, home: Path) -> Optional[tuple[str, ...]]:
+    try:
+        return tuple(path.relative_to(home).parts)
+    except ValueError:
+        pass
+    for container in configured_profile_containers(home):
+        try:
+            relative = path.relative_to(container)
+        except ValueError:
+            continue
+        if len(relative.parts) >= 2:
+            return tuple(relative.parts[1:])
+    return None
+
+
+def chromium_user_data_root(parts: tuple[str, ...]) -> bool:
+    if len(parts) >= 3 and parts[2] == "user data":
+        vendor, product = parts[:2]
+        return (
+            (vendor == "google" and product.startswith("chrome"))
+            or (vendor == "microsoft" and product.startswith("edge"))
+            or (
+                vendor == "bravesoftware"
+                and product.startswith("brave-browser")
+            )
+        )
+    if len(parts) >= 2 and parts[1] == "user data":
+        return parts[0].startswith(("chromium", "vivaldi", "arc"))
+    return False
+
+
+def is_browser_profile_path(path: Path) -> bool:
+    relative = profile_relative_parts(path.resolve(), Path.home().resolve())
+    if relative is None:
+        return False
+    parts = tuple(part.casefold() for part in relative)
+
+    if parts[:2] == ("appdata", "local"):
+        tail = parts[2:]
+        if chromium_user_data_root(tail):
+            return True
+        if tail[:3] == ("mozilla", "firefox", "profiles"):
+            return True
+        if (
+            len(tail) >= 2
+            and tail[0] == "packages"
+            and tail[1].startswith("thebrowsercompany.arc")
+        ):
+            return True
+    if parts[:2] == ("appdata", "roaming"):
+        tail = parts[2:]
+        if tail[:3] == ("mozilla", "firefox", "profiles"):
+            return True
+        if (
+            len(tail) >= 2
+            and tail[0] == "opera software"
+            and tail[1].startswith("opera")
+        ):
+            return True
+
+    if parts[:2] == ("library", "application support"):
+        tail = parts[2:]
+        if (
+            len(tail) >= 2
+            and tail[0] == "google"
+            and tail[1].startswith("chrome")
+        ):
+            return True
+        if tail and tail[0].startswith(
+            ("chromium", "microsoft edge", "vivaldi", "arc")
+        ):
+            return True
+        if (
+            len(tail) >= 2
+            and tail[0] == "bravesoftware"
+            and tail[1].startswith("brave-browser")
+        ):
+            return True
+        if tail and tail[0].startswith("com.operasoftware.opera"):
+            return True
+        if tail[:2] == ("firefox", "profiles"):
+            return True
+    if parts[:2] == ("library", "safari"):
+        return True
+
+    if parts[:1] == (".config",):
+        tail = parts[1:]
+        if tail and tail[0].startswith(
+            (
+                "google-chrome",
+                "chromium",
+                "microsoft-edge",
+                "vivaldi",
+                "opera",
+                "arc",
+            )
+        ):
+            return True
+        if (
+            len(tail) >= 2
+            and tail[0] == "bravesoftware"
+            and tail[1].startswith("brave-browser")
+        ):
+            return True
+    return parts[:2] == (".mozilla", "firefox")
+
+
+@lru_cache(maxsize=8)
+def configured_personal_roots(home: Path) -> frozenset[Path]:
+    roots = {
+        home,
+        *(home / name for name in PERSONAL_ROOT_NAMES | CLOUD_ROOT_NAMES),
+    }
+    for variable in CONFIGURED_CLOUD_ROOT_ENV_VARS:
+        value = os.environ.get(variable)
+        if value:
+            candidate = Path(os.path.expandvars(value)).expanduser()
+            if candidate.is_absolute():
+                roots.add(candidate)
+
+    if os.name == "nt":
+        try:
+            import winreg
+
+            with winreg.OpenKey(
+                winreg.HKEY_CURRENT_USER,
+                r"Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders",
+            ) as key:
+                index = 0
+                while True:
+                    try:
+                        _, value, _ = winreg.EnumValue(key, index)
+                    except OSError:
+                        break
+                    index += 1
+                    if isinstance(value, str) and value.strip():
+                        candidate = Path(os.path.expandvars(value)).expanduser()
+                        if candidate.is_absolute():
+                            roots.add(candidate)
+        except (ImportError, OSError):
+            pass
+
+    return frozenset(path.resolve() for path in roots)
+
+
+def cloud_provider_root_name(name: str) -> bool:
+    normalized = name.casefold()
+    if normalized in CLOUD_ROOT_NAMES:
+        return True
+    providers = (
+        "box",
+        "dropbox",
+        "google drive",
+        "mega",
+        "nextcloud",
+        "onedrive",
+        "pcloud",
+        "proton drive",
+        "seafile",
+    )
+    return any(
+        normalized.startswith((f"{provider} (", f"{provider} - "))
+        for provider in providers
+    )
+
+
+def is_cloud_account_root(path: Path, home: Path) -> bool:
+    name = path.name.casefold()
+    root_level = path.parent == Path(path.anchor)
+    relative = profile_relative_parts(path, home)
+    profile_level = relative is not None and len(relative) == 1
+    folded_relative = (
+        tuple(part.casefold() for part in relative)
+        if relative is not None
+        else None
+    )
+    mac_cloud_storage_root = (
+        folded_relative is not None
+        and len(folded_relative) == 3
+        and folded_relative[:2] == ("library", "cloudstorage")
+    )
+    mac_cloud_container = folded_relative in {
+        ("library", "cloudstorage"),
+        ("library", "mobile documents"),
+    }
+    if mac_cloud_container or mac_cloud_storage_root:
+        return True
+    if cloud_provider_root_name(name) and (
+        root_level or profile_level
+    ):
+        return True
+    return folded_relative == (
+        "library",
+        "mobile documents",
+        "com~apple~clouddocs",
+    )
+
+
+def broad_personal_root(path: Path, home: Path) -> bool:
+    if path in configured_personal_roots(home):
+        return True
+    for container in configured_profile_containers(home):
+        if path == container:
+            return True
+        try:
+            relative = path.relative_to(container)
+        except ValueError:
+            continue
+        if len(relative.parts) == 1:
+            return True
+    relative = profile_relative_parts(path, home)
+    if relative is not None and len(relative) == 1:
+        name = relative[0].casefold()
+        if name in PERSONAL_ROOT_NAMES or cloud_provider_root_name(name):
+            return True
+    return is_cloud_account_root(path, home)
+
+
 def resolve_item_path(raw: str, spec_dir: Path) -> Path:
     candidate = Path(raw).expanduser()
     if not candidate.is_absolute():
@@ -360,32 +656,13 @@ def resolve_item_path(raw: str, spec_dir: Path) -> Path:
         raise BundleError(f"drive or filesystem root cannot be selected: {resolved}")
     if resolved.is_dir():
         home = Path.home().resolve()
-        broad_personal_roots = {
-            (home / name).resolve()
-            for name in (
-                "Desktop",
-                "Documents",
-                "Downloads",
-                "Music",
-                "OneDrive",
-                "Pictures",
-                "Videos",
-            )
-        }
-        if resolved == home or resolved in broad_personal_roots:
+        if broad_personal_root(resolved, home):
             raise BundleError(f"home or broad personal root cannot be selected: {resolved}")
         if resolved.name.casefold() in DEFAULT_EXCLUDED_DIRS | PATH_DIR_NAMES:
             raise BundleError(
                 f"protected or generated directory root cannot be selected: {resolved.name}"
             )
-        folded = [part.casefold() for part in resolved.parts]
-        joined = "/".join(folded)
-        browser_markers = (
-            "/google/chrome/user data",
-            "/microsoft/edge/user data",
-            "/mozilla/firefox/profiles",
-        )
-        if any(marker in joined for marker in browser_markers):
+        if is_browser_profile_path(resolved):
             raise BundleError("browser profile directories cannot be selected")
     return resolved
 
@@ -677,14 +954,8 @@ def path_findings(logical_path: str, source_path: Path) -> list[dict[str, Any]]:
     source_parts = [part.casefold() for part in source_path.parts]
     parts = source_parts + logical_parts
     filename = source_path.name.casefold()
-    source_joined = "/".join(source_parts)
-    browser_markers = (
-        "/google/chrome/user data/",
-        "/microsoft/edge/user data/",
-        "/mozilla/firefox/profiles/",
-    )
-    if filename in {"login data", "cookies", "history", "local state"} or any(
-        marker in source_joined + "/" for marker in browser_markers
+    if filename in {"login data", "cookies", "history", "local state"} or (
+        is_browser_profile_path(source_path)
     ):
         findings.append(
             {
