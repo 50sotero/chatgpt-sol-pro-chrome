@@ -1,4 +1,4 @@
-# ChatGPT Pro (chrome)
+# ChatGPT PRO (chrome)
 
 A personal Codex skill for running evidence-backed tasks through the signed-in
 Chrome session on `chatgpt.com`.
