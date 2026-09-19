@@ -2,7 +2,7 @@
 
 Read this reference for complex reviews, uploads, long jobs, iterative passes, and downloadable outputs.
 
-## Compose for Sol Pro
+## Compose for Astra Pro
 
 Use an outcome-focused prompt with these fields:
 

@@ -1,4 +1,4 @@
 interface:
-  display_name: "ChatGPT Sol Pro (Chrome)"
-  short_description: "Share project context with verified Sol Pro"
-  default_prompt: "Use $chatgpt-sol-pro-chrome to identify this task's local project, reuse or create its matching ChatGPT Project, share the reviewed task context, and return the verified GPT-5.6 Sol Pro result."
+  display_name: "ChatGPT Astra Pro (Chrome)"
+  short_description: "Share project context with verified Astra Pro"
+  default_prompt: "Use $chatgpt-sol-pro-chrome to identify this task's local project, reuse or create its matching ChatGPT Project, share the reviewed task context, and return the verified GPT-6 Astra Pro result."

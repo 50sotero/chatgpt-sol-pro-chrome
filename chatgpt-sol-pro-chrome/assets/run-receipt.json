@@ -35,7 +35,7 @@
     "account_or_workspace": null
   },
   "target": {
-    "model": "GPT-5.6 Sol",
+    "model": "GPT-6 Astra",
     "model_verified": false,
     "mode": "Pro",
     "mode_verified": false,

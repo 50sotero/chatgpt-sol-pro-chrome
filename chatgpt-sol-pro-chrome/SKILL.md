@@ -1,11 +1,11 @@
 ---
 name: chatgpt-sol-pro-chrome
-description: "Control chatgpt.com through the user's signed-in Chrome session, identify the originating local project, reuse or create the matching ChatGPT Project, share reviewed screen snapshots, plans, selected files, logs, diffs, and artifacts through deterministic context bundles, run prompts with the Chat surface plus GPT-5.6 Sol and Pro intelligence, monitor long responses, continue exact conversations, retrieve and validate files, and record evidence. Use when the user asks to ask or use ChatGPT Pro, run something through GPT-5.6 Sol Pro, share task context with ChatGPT, get a high-value second opinion, continue a chatgpt.com conversation, or perform a ChatGPT file/artifact job via Chrome. Do not use for OpenAI API implementation, ordinary Codex model selection, or unrelated Chrome browsing."
+description: "Control chatgpt.com through the user's signed-in Chrome session, identify the originating local project, reuse or create the matching ChatGPT Project, share reviewed screen snapshots, plans, selected files, logs, diffs, and artifacts through deterministic context bundles, run prompts with the Chat surface plus GPT-6 Astra and Pro intelligence, monitor long responses, continue exact conversations, retrieve and validate files, and record evidence. Use when the user asks to ask or use ChatGPT Pro, run something through GPT-6 Astra Pro, share task context with ChatGPT, get a high-value second opinion, continue a chatgpt.com conversation, or perform a ChatGPT file/artifact job via Chrome. Do not use for OpenAI API implementation, ordinary Codex model selection, or unrelated Chrome browsing."
 ---
 
-# ChatGPT GPT-5.6 Sol Pro via Chrome
+# ChatGPT GPT-6 Astra Pro via Chrome
 
-Run one evidence-backed ChatGPT task through the user's Chrome profile. Treat the target as two independent settings: model `GPT-5.6 Sol` plus intelligence mode `Pro`.
+Run one evidence-backed ChatGPT task through the user's Chrome profile. Treat the target as two independent settings: model `GPT-6 Astra` plus intelligence mode `Pro`.
 
 ## Use the required foundation
 
@@ -39,7 +39,7 @@ Run one evidence-backed ChatGPT task through the user's Chrome profile. Treat th
 - Continue the exact user-mentioned conversation or project when the user asks for continuity, a delta review, or a final pass. Claim an exact live tab or navigate to an exact recorded ChatGPT URL; never guess a tab ID or conversation URL.
 - Keep one canonical tab and URL per task. Do not create a second chat after an ambiguous send, reconnect, or timeout.
 - Preserve the same conversation for iterative critique when prior decisions and artifacts matter. Send only the resolved context and delta on later passes.
-- Use the `Chat` surface for the Sol + Pro target. Use `Work` only when explicitly requested and only after independently verifying that the exact target remains available.
+- Use the `Chat` surface for the Astra + Pro target. Use `Work` only when explicitly requested and only after independently verifying that the exact target remains available.
 
 ## Run the state machine
 
@@ -54,12 +54,12 @@ Read [references/chatgpt-state-machine.md](references/chatgpt-state-machine.md) 
 - Create an in-memory task record with a task ID, objective, local project fingerprint, ChatGPT Project URL/ID, canonical conversation URL, prompt fingerprint, model, mode, pre-submit turn count, attachments, and state.
 - Stop as `BLOCKED` for sign-in, CAPTCHA, account mismatch, unavailable entitlement, or an exact model/mode option that cannot be established. Never silently downgrade.
 
-### 2. Verify GPT-5.6 Sol plus Pro
+### 2. Verify GPT-6 Astra plus Pro
 
 - Inspect a fresh DOM snapshot and use only locators grounded in it.
 - Scope controls to the composer or active model menu so the account-plan `Pro` badge is not confused with the selected `Pro` intelligence mode.
 - Verify two independent checked states:
-  - model: `GPT-5.6 Sol`
+  - model: `GPT-6 Astra`
   - intelligence: `Pro`
 - Treat a closed-menu label as a breadcrumb, not proof. Reopen the menu and verify both checked items after any selection.
 - Use accessibility roles, stable test IDs, or stable attributes; confirm uniqueness before every interaction.
@@ -117,6 +117,6 @@ Read [references/chatgpt-state-machine.md](references/chatgpt-state-machine.md) 
 
 - Capture the local project fingerprint, exact ChatGPT Project URL/ID/name, canonical conversation URL, chat title, model, mode, prompt fingerprint, context inventory/bundle hashes, screen matrix, pre/post turn identity, submission time, terminal state, response length/hash, artifact paths/hashes, validation results, blockers, and next action.
 - Use [assets/run-receipt.json](assets/run-receipt.json) for long, resumable, or artifact-producing jobs.
-- Report exact evidence and any remaining uncertainty. Do not claim Sol + Pro unless both were visibly verified.
+- Report exact evidence and any remaining uncertainty. Do not claim Astra + Pro unless both were visibly verified.
 - Keep the canonical tab as `handoff` only for sign-in, approval, CAPTCHA, `RUNNING`, `WAITING_INPUT`, or `UNCERTAIN` work. Keep it as `deliverable` only when the user needs the live chat. Otherwise return the result and URL, omit the tab, and finalize Chrome exactly once.
 - Leave unrelated user tabs untouched.

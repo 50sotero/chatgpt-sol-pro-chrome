@@ -1,4 +1,4 @@
-# ChatGPT GPT-5.6 Sol Pro via Chrome
+# ChatGPT GPT-6 Astra Pro via Chrome
 
 A personal Codex skill for running evidence-backed tasks through the signed-in
 Chrome session on `chatgpt.com`.
@@ -12,7 +12,7 @@ The skill can:
 
 - identify the local Git repository, workspace, or projectless task;
 - reuse a verified ChatGPT Project or create a deterministic new one;
-- select and verify GPT-5.6 Sol with Pro intelligence;
+- select and verify GPT-6 Astra with Pro intelligence;
 - share reviewed plans, source files, diffs, logs, artifacts, and screen
   snapshots through deterministic context bundles;
 - monitor long-running responses without duplicate submissions;
@@ -39,6 +39,9 @@ The skill can:
 - **Fail-closed safety:** block stale bindings, source drift, broad personal
   roots, browser profiles, unreviewed screens, and unverifiable model states.
 
+The skill keeps its existing `chatgpt-sol-pro-chrome` identifier and install path
+for compatibility; its target model is now GPT-6 Astra.
+
 ## Install
 
 Copy the `chatgpt-sol-pro-chrome` directory into your personal Codex skills
@@ -54,7 +57,7 @@ Start a new Codex task after installation so the skill is discovered.
 ```text
 Use $chatgpt-sol-pro-chrome to identify this repository, reuse or create its
 matching ChatGPT Project, share the reviewed implementation plan and current
-diff, and return a verified GPT-5.6 Sol Pro review.
+diff, and return a verified GPT-6 Astra Pro review.
 ```
 
 ## Safety model
@@ -72,7 +75,7 @@ streaming.
 
 - Codex with the Chrome control plugin available.
 - Chrome connected to Codex and signed in to the intended ChatGPT account.
-- Access to GPT-5.6 Sol and Pro intelligence in the selected ChatGPT workspace.
+- Access to GPT-6 Astra and Pro intelligence in the selected ChatGPT workspace.
 
 ChatGPT Project memory, sharing, and file behavior can change. Recheck the
 [official Projects guidance](https://help.openai.com/en/articles/10169521-projects-in-chatgpt)

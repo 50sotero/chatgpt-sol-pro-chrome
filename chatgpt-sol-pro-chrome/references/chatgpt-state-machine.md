@@ -8,7 +8,7 @@ Before this state machine reaches model selection, complete:
 
 Follow [project-routing.md](project-routing.md). Do not upload or submit until the local identity, exact ChatGPT Project, and conversation are separately proven.
 
-## Current observed UI contract
+## Historical UI observations
 
 Observed on `chatgpt.com` in a signed-in Pro account on 2026-07-25:
 
@@ -19,17 +19,15 @@ Observed on `chatgpt.com` in a signed-in Pro account on 2026-07-25:
 - The profile area also displayed an account-plan `Pro` badge. That badge proved entitlement only; it did not prove selected intelligence mode.
 - Completed conversation turns used `section` elements with `data-testid="conversation-turn-N"`. A completed assistant turn exposed a `Response actions` group and a `Copy response` button with `data-testid="copy-turn-action-button"`. The response body used a scoped Markdown/prose container and a stable `data-message-id`.
 
-Official semantic anchors:
+## Current target
 
-- GPT-5.6 Sol is the flagship model for complex work.
-- Pro is a mode applied to a GPT-5.6 model, not a separate `gpt-5.6-pro` model.
-- Pro returns one final answer after more model work and can take materially longer.
+Target `GPT-6 Astra` with `Pro` intelligence. The observations above describe the earlier Sol UI, not a verified Astra picker. Rediscover the current controls and verify the exact Astra model and Pro mode independently before submission. An account-plan badge does not establish either selection.
 
 Recheck current official guidance if the product labels or picker structure change:
 
 - https://learn.chatgpt.com/docs/models
 - https://learn.chatgpt.com/docs/web
-- https://developers.openai.com/api/docs/guides/model-guidance?model=gpt-5.6
+- https://developers.openai.com/api/docs/models/gpt-6-astra
 
 ## Establish the target
 
@@ -38,7 +36,7 @@ Recheck current official guidance if the product labels or picker structure chan
 3. Select the `Chat` surface when it is not already checked.
 4. Scope the model/intelligence control to the composer or `main`.
 5. Open the control and inspect the current accessible roles and names.
-6. Open the model submenu and select `GPT-5.6 Sol` only when its checked state is absent.
+6. Open the model submenu and select `GPT-6 Astra` only when its checked state is absent.
 7. Reopen the intelligence menu if selection closed it.
 8. Select `Pro` only when its checked state is absent.
 9. Reopen the menu and independently verify both checked states after all changes.
