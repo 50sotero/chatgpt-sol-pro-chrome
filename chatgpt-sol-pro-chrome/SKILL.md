@@ -3,7 +3,7 @@ name: chatgpt-sol-pro-chrome
 description: "Control chatgpt.com through the user's signed-in Chrome session, identify the originating local project, reuse or create the matching ChatGPT Project, share reviewed screen snapshots, plans, selected files, logs, diffs, and artifacts through deterministic context bundles, run prompts with the Chat surface plus GPT-6 Astra and Pro intelligence, monitor long responses, continue exact conversations, retrieve and validate files, and record evidence. Use when the user asks to ask or use ChatGPT Pro, run something through GPT-6 Astra Pro, share task context with ChatGPT, get a high-value second opinion, continue a chatgpt.com conversation, or perform a ChatGPT file/artifact job via Chrome. Do not use for OpenAI API implementation, ordinary Codex model selection, or unrelated Chrome browsing."
 ---
 
-# ChatGPT GPT-6 Astra Pro via Chrome
+# ChatGPT Pro (chrome)
 
 Run one evidence-backed ChatGPT task through the user's Chrome profile. Treat the target as two independent settings: model `GPT-6 Astra` plus intelligence mode `Pro`.
 
